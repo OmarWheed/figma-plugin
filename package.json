@@ -1,0 +1,6 @@
+{
+ "name":"figma-flutter-assets-exporter","version":"0.1.0","private":true,
+ "scripts":{"build":"node build.mjs","watch":"node build.mjs --watch","check":"tsc --noEmit && tsc -p tsconfig.ui.json","test":"node tests/extraction.mjs && node tests/run-browser.mjs"},
+ "devDependencies":{"@figma/plugin-typings":"*","esbuild":"^0.25.0","typescript":"^5.0.0"},
+ "dependencies":{"jszip":"^3.10.1"}
+}
