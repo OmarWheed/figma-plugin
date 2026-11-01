@@ -5,5 +5,9 @@ alwaysApply: true
 When implementing a Flutter screen, read `metadata/assets_manifest.json` and `metadata/screen_mapping.json` first.
 Use paths and semantic names from `lib/generated/app_assets.dart` instead of inventing asset paths.
 Check `tokens/colors.json` and `tokens/typography.json` before inventing colors or font styles.
+Use `AppColors`, `AppGradients` and `AppTextStyles` from `lib/generated` before inventing colors, gradients or text styles.
 SVGs must use `flutter_svg` and `SvgPicture.asset(AppAssets.theRelevantAsset)`.
+For manifest assets with `"tintable": true`, use the occurrence's `tint` value with `colorFilter: ColorFilter.mode(..., BlendMode.srcIn)`. Do not create a separate SVG for each color.
+PNGs use `Image.asset(AppAssets.theRelevantAsset)`. Resolution variants (2.0x/, 3.0x/) are selected automatically; do not reference them by path.
+See `metadata/pubspec_snippet.yaml` for the pubspec entries that these assets need.
 If a matching asset is missing or ambiguous, say so; do not claim a guessed icon is in the export.

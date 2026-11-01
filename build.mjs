@@ -2,13 +2,17 @@ import { build, context } from 'esbuild';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 await mkdir('dist',{recursive:true});
 const watch = process.argv.includes('--watch');
-const codeOptions={entryPoints:['src/code.ts'],bundle:true,platform:'browser',target:'es2020',outfile:'dist/code.js'};
-const uiOptions={entryPoints:['src/ui.ts'],bundle:true,platform:'browser',target:'es2020',write:false};
+// Minified bundles load faster in Figma. Pass --dev for readable output while debugging.
+const minify = !process.argv.includes('--dev');
+const codeOptions={entryPoints:['src/code.ts'],bundle:true,platform:'browser',target:'es2020',outfile:'dist/code.js',minify};
+const uiOptions={entryPoints:['src/ui.ts'],bundle:true,platform:'browser',target:'es2020',write:false,minify};
 async function bundleUI(){
  const result=await build(uiOptions);
  const script=result.outputFiles[0].text;
+ if(/<\/script/i.test(script))throw new Error('The UI bundle contains "</script", which would end the inline script early.');
  const template=await readFile('src/ui.html','utf8');
- await writeFile('dist/ui.html',template.replace('/* INSERT_BUNDLE */',script));
+ // A replacer function keeps "$&" or "$'" sequences in the bundle from being expanded by String.replace.
+ await writeFile('dist/ui.html',template.replace('/* INSERT_BUNDLE */',()=>script));
 }
 await bundleUI();
 if(watch){const ctx=await context(codeOptions);await ctx.watch(); console.log('Watching code.ts. Re-run npm run build after changing ui.ts or ui.html.');}
